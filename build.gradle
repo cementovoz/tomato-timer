@@ -1,0 +1,30 @@
+apply from: 'javafx.plugin'
+
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile ('log4j:log4j:1.2.17') {
+        exclude group: 'javax.jms'
+        exclude group: "com.sun.jdmk"
+        exclude group: "com.sun.jmx"
+    }
+}
+
+
+compileJava {
+    sourceCompatibility = 8
+    targetCompatibility = 8
+}
+
+javafx {
+    mainClass 'com.github.cementovoz.tomatofx.Launcher'
+    appID 'com.github.cementovoz.tomatofx'
+    appName 'Tomato'
+    category 'media'
+    codebase 'https://github.com/cementovoz/tomatofx'
+    menu = true
+    shortcut = true
+}
