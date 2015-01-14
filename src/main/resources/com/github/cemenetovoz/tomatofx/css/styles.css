@@ -1,10 +1,7 @@
-* {
-    -fx-background-color: transparent;
-}
-
 .timer {
     -fx-background-image: url("../img/timer.png");
     -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
 }
 
 .container-text {
@@ -14,3 +11,4 @@
 .container-text > Label {
     -fx-text-fill: whitesmoke;
 }
+

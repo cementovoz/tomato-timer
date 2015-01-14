@@ -1,17 +1,20 @@
 package com.github.cementovoz.tomatofx;
 
-import javafx.beans.binding.Binding;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
-import javafx.util.converter.DateTimeStringConverter;
-import javafx.util.converter.NumberStringConverter;
+import javafx.scene.media.AudioClip;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -19,19 +22,64 @@ import javafx.util.converter.NumberStringConverter;
  */
 public class TimerController extends AnchorPane {
 
-
-    private final Label seconds = new Label();
-    private final Label minutes = new Label();
-    private final Label separator = new Label();
-
-    private SimpleObjectProperty<Date>
+    private SimpleLongProperty timeProperty = new SimpleLongProperty(10L);
+    private SimpleBooleanProperty started = new SimpleBooleanProperty(false);
+    private ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture future;
 
     public TimerController () {
         getStyleClass().add("timer");
-        Bindings.bindBidirectional(minutes.textProperty(),
-                minuteProperty,
-                new DateTimeStringConverter());
+        createLabels();
+        createButtons();
+        started.addListener((property, oldVal, newVal) -> {
+            System.out.println(1);
+            if (newVal) {
+                future = service.scheduleAtFixedRate(nextTick(), 0L, 1L, TimeUnit.SECONDS);
+            }
+            else if (future != null) {
+                future.cancel(true);
+                future = null;
+                // @todo
+            }
+        });
+    }
 
+    private Runnable nextTick() {
+            return () -> Platform.runLater(() -> {
+                timeProperty.set(timeProperty.get() - 1);
+                if (timeProperty.get() <= 0) {
+                    started.set(false);
+                    playSound();
+                }
+            });
+    }
+
+    private void playSound() {
+        AudioClip plonkSound = new AudioClip(getClass().getResource("/com/github/cemenetovoz/tomatofx/media/sound."));
+        plonkSound.play();
+    }
+
+    private void createButtons() {
+        final ToggleButton mainButton = new ToggleButton("Start");
+        mainButton.textProperty().bind(Bindings.createStringBinding(()->
+                mainButton.selectedProperty().get() ? "Stop" : "Start",
+                mainButton.selectedProperty()));
+        started.bindBidirectional(mainButton.selectedProperty());
+        HBox hBox = new HBox(){{
+            getStyleClass().add("container-btn");
+            getChildren().addAll(mainButton);
+        }};
+        AnchorPane.setTopAnchor(hBox, 300d);
+        AnchorPane.setLeftAnchor(hBox, 0d);
+        AnchorPane.setRightAnchor(hBox, 0d);
+        hBox.setAlignment(Pos.BASELINE_CENTER);
+        getChildren().add(hBox);
+    }
+
+    private void createLabels() {
+        final Label seconds = new Label();
+        final Label minutes = new Label();
+        final Label separator = new Label(":");
         HBox hBox = new HBox() {{
             getStyleClass().add("container-text");
             getChildren().addAll(minutes, separator, seconds);
@@ -40,9 +88,20 @@ public class TimerController extends AnchorPane {
         AnchorPane.setLeftAnchor(hBox, 0d);
         AnchorPane.setRightAnchor(hBox, 0d);
         hBox.setAlignment(Pos.BASELINE_CENTER);
-        getChildren().addAll(hBox);
-
-
+        getChildren().add(hBox);
+        minutes.textProperty().bind(Bindings.createStringBinding(() -> String.format("%1$02d", timeProperty.intValue() / 60), timeProperty));
+        seconds.textProperty().bind(Bindings.createStringBinding(() -> String.format("%1$02d", timeProperty.intValue() % 60), timeProperty));
     }
 
+    public SimpleLongProperty timeProperty() {
+        return timeProperty;
+    }
+
+    public void stop() {
+        if (future != null) {
+            future.cancel(true);
+            future = null;
+        }
+        service.shutdown();
+    }
 }
