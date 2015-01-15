@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
@@ -22,24 +23,36 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimerController extends AnchorPane {
 
-    private SimpleLongProperty timeProperty = new SimpleLongProperty(10L);
+    private long WORK_TIME = 5L;
+    private long RELAX_TIME = 5 * 60L;
+
+    private SimpleLongProperty timeProperty = new SimpleLongProperty(WORK_TIME);
     private SimpleBooleanProperty started = new SimpleBooleanProperty(false);
     private ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
     private ScheduledFuture future;
+
+    private SimpleObjectProperty<TimeType> timeTypeProperty = new SimpleObjectProperty<>();
+
 
     public TimerController () {
         getStyleClass().add("timer");
         createLabels();
         createButtons();
         started.addListener((property, oldVal, newVal) -> {
-            System.out.println(1);
             if (newVal) {
                 future = service.scheduleAtFixedRate(nextTick(), 0L, 1L, TimeUnit.SECONDS);
             }
             else if (future != null) {
                 future.cancel(true);
                 future = null;
-                // @todo
+            }
+        });
+        timeTypeProperty.addListener((property, oldValue, newValue) -> {
+            if (newValue == TimeType.WORK) {
+                timeProperty.set(WORK_TIME);
+            }
+            else {
+                timeProperty.set(RELAX_TIME);
             }
         });
     }
@@ -50,12 +63,13 @@ public class TimerController extends AnchorPane {
                 if (timeProperty.get() <= 0) {
                     started.set(false);
                     playSound();
+                    timeTypeProperty.set(timeTypeProperty.get() == TimeType.WORK  ? TimeType.RELAX : TimeType.WORK);
                 }
             });
     }
 
     private void playSound() {
-        AudioClip plonkSound = new AudioClip(getClass().getResource("/com/github/cemenetovoz/tomatofx/media/sound."));
+        AudioClip plonkSound = new AudioClip(getClass().getResource("/com/github/cemenetovoz/tomatofx/media/timer.mp3").toExternalForm());
         plonkSound.play();
     }
 
@@ -97,11 +111,19 @@ public class TimerController extends AnchorPane {
         return timeProperty;
     }
 
+
+    /**
+     * Shutdown executor service, and cancel or interrupt thread
+     */
     public void stop() {
         if (future != null) {
             future.cancel(true);
             future = null;
         }
         service.shutdown();
+    }
+
+    private static enum TimeType {
+        WORK, RELAX
     }
 }
