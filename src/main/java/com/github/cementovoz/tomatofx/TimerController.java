@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimerController extends AnchorPane {
 
-    private long WORK_TIME = 5L;
+    private long WORK_TIME = 25 * 60L;
     private long RELAX_TIME = 5 * 60L;
 
     private SimpleLongProperty timeProperty = new SimpleLongProperty(WORK_TIME);
