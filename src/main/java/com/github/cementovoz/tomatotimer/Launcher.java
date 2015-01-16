@@ -1,4 +1,4 @@
-package com.github.cementovoz.tomatofx;
+package com.github.cementovoz.tomatotimer;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -11,7 +11,7 @@ import javafx.stage.StageStyle;
  */
 public class Launcher extends Application {
 
-    private static final String CSS_STYLES = "/com/github/cemenetovoz/tomatofx/css/styles.css";
+    private static final String CSS_STYLES = "/com/github/cemenetovoz/tomatotimer/css/styles.css";
     private TimerController timer;
 
 

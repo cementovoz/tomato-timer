@@ -1,4 +1,4 @@
-package com.github.cementovoz.tomatofx;
+package com.github.cementovoz.tomatotimer;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -69,7 +69,7 @@ public class TimerController extends AnchorPane {
     }
 
     private void playSound() {
-        AudioClip plonkSound = new AudioClip(getClass().getResource("/com/github/cemenetovoz/tomatofx/media/timer.mp3").toExternalForm());
+        AudioClip plonkSound = new AudioClip(getClass().getResource("/com/github/cemenetovoz/tomatotimer/media/timer.mp3").toExternalForm());
         plonkSound.play();
     }
 

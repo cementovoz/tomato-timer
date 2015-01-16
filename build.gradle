@@ -21,16 +21,15 @@ compileJava {
 
 jar {
     manifest {
-	attributes ("Main-Class" : 'com.github.cementovoz.tomatofx.Launcher')
+	attributes ("Main-Class" : 'com.github.cementovoz.tomatotimer.Launcher')
     }
 }
 
 javafx {
-    mainClass 'com.github.cementovoz.tomatofx.Launcher'
-    appID 'com.github.cementovoz.tomatofx'
-    appName 'Tomato'
-    category 'media'
-    codebase 'https://github.com/cementovoz/tomatofx'
+    mainClass 'com.github.cementovoz.tomatotimer.Launcher'
+    appID 'com.github.cementovoz.tomatotimer'
+    appName 'Tomato Timer'
+    codebase 'https://github.com/cementovoz/tomatotimer'
     menu = true
     shortcut = true
 }

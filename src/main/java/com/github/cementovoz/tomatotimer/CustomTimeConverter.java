@@ -1,4 +1,4 @@
-package com.github.cementovoz.tomatofx;
+package com.github.cementovoz.tomatotimer;
 
 import javafx.util.StringConverter;
 
