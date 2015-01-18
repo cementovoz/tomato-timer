@@ -5,13 +5,20 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.media.AudioClip;
 
+import javax.swing.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -23,6 +30,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimerController extends AnchorPane {
 
+    private static final String PAUSE_ICON = "/com/github/cemenetovoz/tomatotimer/img/pause.png";
+    private static final String START_ICON = "/com/github/cemenetovoz/tomatotimer/img/start.png";
+    private static final String RESET_ICON = "/com/github/cemenetovoz/tomatotimer/img/reset.png";
     private long WORK_TIME = 25 * 60L;
     private long RELAX_TIME = 5 * 60L;
 
@@ -74,14 +84,27 @@ public class TimerController extends AnchorPane {
     }
 
     private void createButtons() {
-        final ToggleButton mainButton = new ToggleButton("Start");
-        mainButton.textProperty().bind(Bindings.createStringBinding(()->
-                mainButton.selectedProperty().get() ? "Stop" : "Start",
+        final ToggleButton mainButton = new ToggleButton();
+        final ImageView pauseIcon = new ImageView(new Image(getClass().getResource(PAUSE_ICON).toExternalForm()));
+        final ImageView startIcon = new ImageView(new Image(getClass().getResource(START_ICON).toExternalForm()));
+        mainButton.graphicProperty().bind(Bindings.createObjectBinding(() ->
+                        mainButton.selectedProperty().get() ? pauseIcon : startIcon,
                 mainButton.selectedProperty()));
         started.bindBidirectional(mainButton.selectedProperty());
+        Button resetButton = new Button("", new ImageView(new Image(RESET_ICON)));
+        resetButton.setDisable(true);
+        resetButton.setTooltip(new Tooltip("Reset timer"));
+        resetButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+                    return started.get() == true || (timeProperty.get() == WORK_TIME || timeProperty.get() == RELAX_TIME) ? true : false;
+                },
+                 timeProperty, started));
+        resetButton.setOnAction(event -> {
+            timeProperty.set(timeTypeProperty.get() == TimeType.WORK ? WORK_TIME : RELAX_TIME);
+        });
         HBox hBox = new HBox(){{
+            setSpacing(10);
             getStyleClass().add("container-btn");
-            getChildren().addAll(mainButton);
+            getChildren().addAll(mainButton, resetButton);
         }};
         AnchorPane.setTopAnchor(hBox, 300d);
         AnchorPane.setLeftAnchor(hBox, 0d);
