@@ -1,38 +1,24 @@
 package com.github.cementovoz.tomatotimer;
 
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
-/**
- * Created by cementovoz on 13.01.15.
- */
 public class Launcher extends Application {
 
-    private static final String CSS_STYLES = "/com/github/cemenetovoz/tomatotimer/css/styles.css";
-    private TimerController timer;
-
-
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        timer = new TimerController();
-        Scene scene = new Scene(timer, 350, 420);
-        scene.getStylesheets().add(Launcher.class.getResource(CSS_STYLES).toExternalForm());
-        scene.setFill(null);
-        primaryStage.setScene(scene);
-        primaryStage.initStyle(StageStyle.TRANSPARENT);
-        Bindings.bindBidirectional(primaryStage.titleProperty(), timer.timeProperty(), new CustomTimeConverter());
-        primaryStage.show();
+    public void start(Stage stage) throws Exception {
+        TimerPane root = new TimerPane();
+        Scene scene = new Scene(root, 350, 250);
+        setStylesheets(scene);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    @Override
-    public void stop() throws Exception {
-        timer.stop();
+    private void setStylesheets(Scene scene) {
+        scene.getStylesheets().add(getClass().getResource("/resources/css/jfoenix-fonts.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/resources/css/jfoenix-design.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
     }
 }

@@ -1,27 +1,25 @@
+apply plugin:'java'
 apply from: 'javafx.plugin'
 
 
 repositories {
     jcenter()
-}
-
-dependencies {
-    compile ('log4j:log4j:1.2.17') {
-        exclude group: 'javax.jms'
-        exclude group: "com.sun.jdmk"
-        exclude group: "com.sun.jmx"
+    maven {
+        url "https://oss.sonatype.org/content/groups/public"
     }
 }
 
-
-compileJava {
-    sourceCompatibility = 8
-    targetCompatibility = 8
+dependencies {
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.1.6'
+    compile group: 'io.reactivex', name: 'rxjavafx', version: '0.1.1'
+    compile group: 'com.google.inject', name: 'guice', version: '4.1.0'
+    compile 'com.jfoenix:jfoenix:0.0.0-SNAPSHOT'
+    compile "de.jensd:fontawesomefx-materialdesignfont:1.4.57-2"
 }
 
 jar {
     manifest {
-	attributes ("Main-Class" : 'com.github.cementovoz.tomatotimer.Launcher')
+        attributes ("Main-Class" : 'com.github.cementovoz.tomatotimer.Launcher')
     }
 }
 
